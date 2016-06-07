@@ -4,41 +4,26 @@
 <head>
     <title>Python Canvas Hex Strategy Game</title>
     <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
-    <script type=text/javascript src="{{
-  url_for('static', filename='jquery-2.2.0.min.js') }}"></script>
+    <script type=text/javascript src="{{url_for('static', filename='jquery-2.2.0.min.js')}}"></script>
+    <script type=text/javascript src="{{url_for('static', filename='buttons.js')}}"></script>
+    <script type=text/javascript src="{{url_for('static', filename='app.js')}}"></script>
+    <script type=text/javascript src="{{url_for('static', filename='hexagon.js')}}"></script>
+    <script type=text/javascript src="{{url_for('static', filename='utils.js')}}"></script>
+    
+
+
 </head>
-<script type="text/javascript"> 
-$(function() {
-    var radius = 20;
-    var data = 
-        {
-            rows: 5,
-            cols: 5,
-            radius: 20,
-            side: Math.round((3 / 2) * radius),
-            height: Math.round(Math.sqrt(3) * radius),
-            width: Math.round(2 * radius),
-        };
-    $('#sendBtn').click(function() {
-        $.ajax({
-            type: 'POST',
-            url: '/createMap',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(data),
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        });
-    });
-});
-</script>
 
 <body>
-    <button id="sendBtn" class="btn btn-lg btn-primary btn-block" type="button">Send</button>
+    <div class="container">
+        <button id="newMapBtn" class="btn btn-lg btn-primary" type="button">New Map</button>
+        <button id="addPlayerBtn" class="btn btn-lg btn-primary" type="button">Add Player</button>
+        <button id="endTurnBtn" class="btn btn-lg btn-primary" type="button">End Turn</button>
+        <button id="endGameBtn" class="btn btn-lg btn-primary" type="button">End Game</button>
+        <button id="saveGameBtn" class="btn btn-lg btn-primary" type="button">Save Game</button>
+
+    </div>
+    <canvas id="HexCanvas" style="width: 500px; height: 500px"></canvas>
 </body>
  
 </html>
