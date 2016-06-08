@@ -16,10 +16,20 @@ hex.rowcolToXY = function(row, col){
 hex.drawHexGrid = function(rows, cols) {
     hex.canvasOriginX = hex.canvas.getBoundingClientRect().left;
     hex.canvasOriginY = hex.canvas.getBoundingClientRect().top;
+
     //base grid
     for (var i = 0; i < cols; i++) {
         for (var j = 0; j < rows; j++) {
-            hex.drawHex(hex.rowcolToXY(j, i).x, hex.rowcolToXY(j, i).y, hex.hexes[i][j].tc, hex.hexes[i][j].txt, hex.hexes[i][j].ownc, false);
+            hexObj = {
+                    "x": hex.rowcolToXY(j, i).x,
+                    "y": hex.rowcolToXY(j, i).y,
+                    "fillColor": hex.hexes[i][j].tc,
+                    "txt": hex.hexes[i][j].txt,
+                    "ownc": hex.hexes[i][j].ownc,
+                    "highlight": false,
+                    "innerHex": false
+                }
+                hex.drawHex(hex.ctx, hexObj); 
         }
     }
 
@@ -27,59 +37,56 @@ hex.drawHexGrid = function(rows, cols) {
     for (var i = 0; i < cols; i++) {
         for (var j = 0; j < rows; j++) {
             if (hex.hexes[i][j].h == true) {
-                hex.drawHex(hex.rowcolToXY(j, i).x, hex.rowcolToXY(j, i).y, hex.hexes[i][j].tc, hex.hexes[i][j].txt, hex.hexes[i][j].ownc, true);                }
+                hexObj = {
+                    "x": hex.rowcolToXY(j, i).x,
+                    "y": hex.rowcolToXY(j, i).y,
+                    "fillColor": hex.hexes[i][j].tc,
+                    "txt": hex.hexes[i][j].txt,
+                    "ownc": hex.hexes[i][j].ownc,
+                    "highlight": true,
+                    "innerHex": false
+                }
+                hex.drawHex(hex.ctx, hexObj);               }
         }
     }
 }
-hex.drawHex = function(x0, y0, fillColor, hexText, hextTextColor, highlight) {
-    if (highlight == true) {
-        hex.ctx.strokeStyle = "#00F2FF";
-        hex.ctx.lineWidth = 4;
+
+hex.drawHex = function(context, hexObj) {
+    if (hexObj.highlight == true) {
+        context.strokeStyle = "#00F2FF";
+        context.lineWidth = 4;
     } else {
-        hex.ctx.strokeStyle = "#000";
-        hex.ctx.lineWidth = 2;
+        context.strokeStyle = "#000";
+        context.lineWidth = 2;
     }
-
-    hex.ctx.beginPath();
-    hex.ctx.moveTo(x0 + hex.width - hex.side, y0);
-    hex.ctx.lineTo(x0 + hex.side, y0);
-    hex.ctx.lineTo(x0 + hex.width, y0 + (hex.height / 2));
-    hex.ctx.lineTo(x0 + hex.side, y0 + hex.height);
-    hex.ctx.lineTo(x0 + hex.width - hex.side, y0 + hex.height);
-    hex.ctx.lineTo(x0, y0 + (hex.height / 2));
-    if (highlight == true) {}
-    if (fillColor && highlight == false) {
-        hex.ctx.fillStyle = fillColor;
-        hex.ctx.fill();
+    var tile = hex.getSelectedTile(hexObj.x + hex.width - hex.side, hexObj.y);
+    var numberOfSides = 6,
+    size = hex.radius,
+    Xcenter = hexObj.x + (hex.width / 2),
+    Ycenter = hexObj.y + (hex.height / 2);
+    context.beginPath();
+    context.moveTo (Xcenter +  size * Math.cos(0), Ycenter +  size *  Math.sin(0));          
+    for (var i = 1; i <= numberOfSides;i += 1) {
+        context.lineTo (Xcenter + size * Math.cos(i * 2 * Math.PI / numberOfSides), Ycenter + size * Math.sin(i * 2 * Math.PI / numberOfSides));
     }
-    hex.ctx.closePath();
-    hex.ctx.stroke();
+    context.fillStyle = hexObj.fillColor;
+    context.fill();
+    context.closePath();
+    context.stroke();
 
-
-    //Draw Circle
-    hex.ctx.beginPath();
-    hex.ctx.arc(x0 + (hex.width/2), y0 + (hex.height/2), (hex.height/4), 0, 2 * Math.PI, false);
-    hex.ctx.fillStyle = hextTextColor;
-    hex.ctx.fill();
-    hex.ctx.stroke();
-
-    //hex.ctx.lineWidth = 1;
-    //hex.ctx.strokeStyle = '#000000';
-    if (hexText) {
+    if (hexObj.txt) {
         //Print number of units
-        hex.ctx.textAlign="center"; 
-        hex.ctx.textBaseline = "middle";
-        hex.ctx.font = 'bold '+ (25/2.25) +'pt Arial';
+        context.textAlign="center"; 
+        context.textBaseline = "middle";
+        context.font = 'bold '+ (25/2.25) +'pt Arial';
         //Code for contrasting text with background color
-        /*var clr = getContrastYIQ(map.dataUnits[tile.row][tile.column].color); //contrast against player color 
-        var clr = getContrastYIQ(fillColor); //contrast against land color (fillColor)
-        hex.ctx.fillStyle = clr;
-        */
-        hex.ctx.fillStyle = "#000000";
-        hex.ctx.fillText("3", x0 + (hex.width / 2) , y0 + (hex.height / 2));
+        var clr = hex.getContrastYIQ(hexObj.fillColor); //contrast against land color (fillColor)
+        context.fillStyle = clr;
+        context.fillText("3", hexObj.x + (hex.width / 2) , hexObj.y + (hex.height / 2));
 
     }
 }
+
 hex.drawHexBorders = function() {
 
 }

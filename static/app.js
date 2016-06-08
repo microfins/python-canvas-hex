@@ -14,17 +14,22 @@ hex.init = function(props, map, reload) {
              hex[k] = props[k];
         }
     }
+    this.layer2 = {};
     this.gameProps = {};
     this.log = [];
     if (reload == false){
-        this.canvas = document.getElementById("HexCanvas");
+        this.canvas = document.getElementById("baseLayer");
+        this.layer2.canvas = document.getElementById("layer2");         
         this.canvas.addEventListener("mousedown", this.clickEvent.bind(this), false);
     }
     this.ctx = null;
+    this.layer2.ctx = null;
     this.canvas.width  = this.canvas.offsetWidth;
     this.canvas.height = this.canvas.offsetHeight;
     this.hexes = map;
     this.ctx = this.canvas.getContext('2d');
+    this.layer2.ctx = this.layer2.canvas.getContext('2d');
+
     
     /*
     Set Size of main div to size of canvas

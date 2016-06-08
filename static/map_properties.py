@@ -47,10 +47,10 @@ def get_game_props(radius):
 
 def get_tile_props(row, col):
     terrains = ['grassland', 'water', 'mountains']
-    terrainColor = {'grassland': 'green', 'water': 'blue', 'mountains': 'brown'}
-    players = [{'name': 'bo_knows', 'color': 'pink'},
-            {'name': 'jwhiletwo', 'color': 'red'},
-            {'name': 'spencer', 'color': 'yellow'}]
+    terrainColor = {'grassland': '#99CC66', 'water': '#3333FF', 'mountains': '#996600'}
+    players = [{'name': 'bo_knows', 'color': '#FF00D4'},
+            {'name': 'jwhiletwo', 'color': '#FF1500'},
+            {'name': 'spencer', 'color': '#FFFF00'}]
     currentTerrain = random.choice(terrains)
     currentPlayer = random.choice(players)
     tile = {
