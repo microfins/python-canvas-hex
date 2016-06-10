@@ -82,3 +82,11 @@ $(function() {
         });
     });
 });
+$(function() {
+    $('#showInfoBtn').click(function() {
+        console.log("It is " + hex.players[hex.turn.player].name + "'s turn.");
+        console.log("It is the " + hex.turn.phase + " phase.");
+    });
+});
+
+

@@ -1,5 +1,7 @@
 import redis
+import math
 from flask import json, jsonify
+
 
 r = redis.Redis("localhost")
 
@@ -21,3 +23,11 @@ def save_map(map_array, map_id):
 
 def get_redis_rowcol_name(row, col):
     return "row:" + str(row) + ":" + "col:" + str(col)
+
+def calc_placeable_units(map_array, username):
+    units = 0
+    for col in range(0, len(map_array)):
+        for row in range(0, len(map_array[col])):
+            if map_array[col][row].owner == username:
+                units += 1
+    return int(math.floor(units/3))

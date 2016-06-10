@@ -14,21 +14,36 @@ hex.init = function(props, map, reload) {
              hex[k] = props[k];
         }
     }
-    this.layer2 = {};
+    hex.canvas_layers = [
+    'base',
+    'top'
+    ]
+    for (var i = 0; i < hex.canvas_layers.length; i++){
+        hex[hex.canvas_layers[i]] = {};
+        hex[hex.canvas_layers[i]].canvas = document.getElementById(hex.canvas_layers[i]);
+        hex[hex.canvas_layers[i]].canvas.addEventListener("mousedown", this.clickEvent.bind(this), false);
+        hex[hex.canvas_layers[i]].ctx = null;
+        hex[hex.canvas_layers[i]].canvas.width  = hex[hex.canvas_layers[i]].canvas.offsetWidth;
+        hex[hex.canvas_layers[i]].canvas.height = hex[hex.canvas_layers[i]].canvas.offsetHeight;
+        hex[hex.canvas_layers[i]].canvas.width  = hex[hex.canvas_layers[i]].canvas.offsetWidth;
+        hex[hex.canvas_layers[i]].canvas.height = hex[hex.canvas_layers[i]].canvas.offsetHeight;
+        hex[hex.canvas_layers[i]].ctx = hex[hex.canvas_layers[i]].canvas.getContext('2d');
+    }
     this.gameProps = {};
     this.log = [];
+    /*
     if (reload == false){
         this.canvas = document.getElementById("baseLayer");
         this.layer2.canvas = document.getElementById("layer2");         
         this.canvas.addEventListener("mousedown", this.clickEvent.bind(this), false);
+        hex.layer2.canvas.addEventListener("mousedown", this.clickEvent.bind(this), false);
     }
-    this.ctx = null;
-    this.layer2.ctx = null;
-    this.canvas.width  = this.canvas.offsetWidth;
-    this.canvas.height = this.canvas.offsetHeight;
+*/
+    document.getElementById('top').onmousedown = function(){
+        return false;
+    };
     this.hexes = map;
-    this.ctx = this.canvas.getContext('2d');
-    this.layer2.ctx = this.layer2.canvas.getContext('2d');
+
 
     
     /*

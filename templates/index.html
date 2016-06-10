@@ -21,10 +21,12 @@
         <button id="endTurnBtn" class="btn btn-lg btn-primary" type="button">End Turn</button>
         <button id="endGameBtn" class="btn btn-lg btn-primary" type="button">End Game</button>
         <button id="saveGameBtn" class="btn btn-lg btn-primary" type="button">Save Game</button>
+        <button id="showInfoBtn" class="btn btn-lg btn-success" type="button">Show Info</button>
+
 
     </div>
-    <canvas id="baseLayer" style="width: 500px; height: 500px; z-index: 1;"></canvas>
-    <canvas id="layer2" style="width: 500px; height: 500px; z-index: 2;"></canvas>
+    <canvas id="base" style="width: 500px; height: 500px; position: absolute; left: 50; top: 50; z-index: 0;"></canvas>
+    <canvas id="top" style="width: 500px; height: 500px; position: absolute; left: 50; top: 50; z-index: 1;"></canvas>
 </body>
  
 </html>

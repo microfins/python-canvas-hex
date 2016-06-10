@@ -13,8 +13,8 @@ def get_game_props(radius):
                     {'name': 'jwhiletwo', 'color': 'green'},
                     {'name': 'spencer', 'color': 'yellow'}],
         'turn': {
-            'player': None,
-            'phase': None
+            'player': 0,
+            'phase': 'unit_placement'
         },
         'clickState': None,
         'neighbors': [],

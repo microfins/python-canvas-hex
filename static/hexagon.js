@@ -4,18 +4,18 @@ hex.clearMap = function(){
 hex.rowcolToXY = function(row, col){
     var offsetColumn = (col % 2 == 0) ? false : true;
     if (!offsetColumn) {
-        x = (col * hex.side) + hex.canvasOriginX;
-        y = (row * hex.height) + hex.canvasOriginY;
+        x = (col * hex.side) + hex.base.canvasOriginX;
+        y = (row * hex.height) + hex.base.canvasOriginY;
     } else {
-        x = col * hex.side + hex.canvasOriginX;
-        y = (row * hex.height) + hex.canvasOriginY + (hex.height * 0.5);
+        x = col * hex.side + hex.base.canvasOriginX;
+        y = (row * hex.height) + hex.base.canvasOriginY + (hex.height * 0.5);
     }
 
     return {"x": x, "y": y}
 }
 hex.drawHexGrid = function(rows, cols) {
-    hex.canvasOriginX = hex.canvas.getBoundingClientRect().left;
-    hex.canvasOriginY = hex.canvas.getBoundingClientRect().top;
+    hex.base.canvasOriginX = hex.base.canvas.getBoundingClientRect().left;
+    hex.base.canvasOriginY = hex.base.canvas.getBoundingClientRect().top;
 
     //base grid
     for (var i = 0; i < cols; i++) {
@@ -29,7 +29,7 @@ hex.drawHexGrid = function(rows, cols) {
                     "highlight": false,
                     "innerHex": false
                 }
-                hex.drawHex(hex.ctx, hexObj); 
+                hex.drawHex(hex.base.ctx, hexObj); 
         }
     }
 
@@ -44,9 +44,10 @@ hex.drawHexGrid = function(rows, cols) {
                     "txt": hex.hexes[i][j].txt,
                     "ownc": hex.hexes[i][j].ownc,
                     "highlight": true,
-                    "innerHex": false
+                    "innerHex": false,
                 }
-                hex.drawHex(hex.ctx, hexObj);               }
+                hex.drawHex(hex.top.ctx, hexObj);               
+            }
         }
     }
 }
@@ -83,7 +84,6 @@ hex.drawHex = function(context, hexObj) {
         var clr = hex.getContrastYIQ(hexObj.fillColor); //contrast against land color (fillColor)
         context.fillStyle = clr;
         context.fillText("3", hexObj.x + (hex.width / 2) , hexObj.y + (hex.height / 2));
-
     }
 }
 
@@ -91,14 +91,15 @@ hex.drawHexBorders = function() {
 
 }
 hex.draw = function() {
-    hex.canvas.width = hex.canvas.width; //clear canvas
+    hex.base.canvas.width = hex.base.canvas.width; //clear canvas
+    hex.top.canvas.width = hex.top.canvas.width; //clear canvas
     hex.drawHexGrid(hex.rows, hex.cols);
 }
 
 hex.getRelativeCanvasOffset = function() {
     var x = 0,
         y = 0;
-    var layoutElement = this.canvas;
+    var layoutElement = this.base.canvas;
     if (layoutElement.offsetParent) {
         do {
             x += layoutElement.offsetLeft;
@@ -112,7 +113,7 @@ hex.getRelativeCanvasOffset = function() {
 }
 
 hex.getSelectedTile = function(mouseX, mouseY) {
-    var offSet = this.canvas.getBoundingClientRect();
+    var offSet = hex.base.canvas.getBoundingClientRect();
     mouseX -= offSet.left;
     mouseY -= offSet.top;
 
@@ -184,8 +185,8 @@ hex.sign = function(p1, p2, p3) {
 hex.clickEvent = function(e) {
     var mouseX = e.pageX - window.pageXOffset;
     var mouseY = e.pageY - window.pageYOffset;
-    var localX = mouseX - this.canvasOriginX;
-    var localY = mouseY - this.canvasOriginY;
+    var localX = mouseX - hex.base.canvasOriginX;
+    var localY = mouseY - hex.base.canvasOriginY;
     var tile = this.getSelectedTile(localX, localY);
     if (GLOBALS.DEBUG == true) {
         console.log(this.hexes[tile.row][tile.col]);
