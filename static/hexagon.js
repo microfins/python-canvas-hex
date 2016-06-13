@@ -27,7 +27,7 @@ hex.drawHexGrid = function(rows, cols) {
                     "txt": hex.hexes[i][j].txt,
                     "ownc": hex.hexes[i][j].ownc,
                     "highlight": false,
-                    "innerHex": false
+                    "innerHex": true
                 }
                 hex.drawHex(hex.base.ctx, hexObj); 
         }
@@ -60,7 +60,6 @@ hex.drawHex = function(context, hexObj) {
         context.strokeStyle = "#000";
         context.lineWidth = 2;
     }
-    var tile = hex.getSelectedTile(hexObj.x + hex.width - hex.side, hexObj.y);
     var numberOfSides = 6,
     size = hex.radius,
     Xcenter = hexObj.x + (hex.width / 2),
@@ -74,6 +73,21 @@ hex.drawHex = function(context, hexObj) {
     context.fill();
     context.closePath();
     context.stroke();
+
+    //Draw a 2nd smaller inner hex for denoting ownership
+    context.strokeStyle = hexObj.ownc;
+    context.lineWidth = 4;
+    size = hex.radius * .8,
+    Xcenter = hexObj.x + (hex.width / 2),
+    Ycenter = hexObj.y + (hex.height / 2);
+    context.beginPath();
+    context.moveTo (Xcenter +  size * Math.cos(0), Ycenter +  size *  Math.sin(0));          
+    for (var i = 1; i <= numberOfSides;i += 1) {
+        context.lineTo (Xcenter + size * Math.cos(i * 2 * Math.PI / numberOfSides), Ycenter + size * Math.sin(i * 2 * Math.PI / numberOfSides));
+    }
+    context.closePath();
+    context.stroke();
+
 
     if (hexObj.txt) {
         //Print number of units
