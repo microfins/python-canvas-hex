@@ -3,8 +3,8 @@ import random
 
 def get_game_props(radius):
     gameProps = {
-        'rows': 10,
-        'cols': 10,
+        'rows': 2,
+        'cols': 2,
         'radius': radius,
         'height': round(math.sqrt(3) * radius),
         'width': round(2 * radius),

@@ -26,33 +26,72 @@ hex.drawHexGrid = function(rows, cols) {
                     "fillColor": hex.hexes[i][j].tc,
                     "txt": hex.hexes[i][j].txt,
                     "ownc": hex.hexes[i][j].ownc,
-                    "highlight": false,
-                    "innerHex": true
+                    "highlight": hex.hexes[i][j].h,
                 }
                 hex.drawHex(hex.base.ctx, hexObj); 
         }
     }
 
-    //overlay items
+    //highlight
     for (var i = 0; i < cols; i++) {
         for (var j = 0; j < rows; j++) {
-            if (hex.hexes[i][j].h == true) {
+            if (hex.hexes[i][j].h == true){
                 hexObj = {
                     "x": hex.rowcolToXY(j, i).x,
                     "y": hex.rowcolToXY(j, i).y,
                     "fillColor": hex.hexes[i][j].tc,
                     "txt": hex.hexes[i][j].txt,
                     "ownc": hex.hexes[i][j].ownc,
-                    "highlight": true,
-                    "innerHex": false,
+                    "highlight": hex.hexes[i][j].h,
                 }
-                hex.drawHex(hex.top.ctx, hexObj);               
+                hex.drawHex(hex.top.ctx, hexObj);   
             }
+            
         }
     }
+
 }
 
 hex.drawHex = function(context, hexObj) {
+    if (hexObj.highlight == true) {
+        context.strokeStyle = "#00F2FF";
+        context.lineWidth = 4;
+    } else {
+        context.strokeStyle = "#000";
+        context.lineWidth = 2;
+    }
+
+    var numberOfSides = 6,
+    size = hex.properties.radius,
+    Xcenter = hexObj.x + (hex.properties.width / 2),
+    Ycenter = hexObj.y + (hex.properties.height / 2);
+
+    var img = new Image();
+    img.src = "/static/grass.jpg";
+    var pattern = context.createPattern(img, "repeat");
+    context.fillStyle = pattern;
+    context.beginPath();
+    context.moveTo (Xcenter +  size * Math.cos(0), Ycenter +  size *  Math.sin(0)); 
+    for (var i = 1; i <= numberOfSides;i += 1) {
+        context.lineTo (Xcenter + size * Math.cos(i * 2 * Math.PI / numberOfSides), Ycenter + size * Math.sin(i * 2 * Math.PI / numberOfSides));
+    }
+    context.fill();
+    context.closePath();
+    context.stroke();   
+
+    if (hexObj.txt) {
+        //Print number of units
+        hex.top.ctx.textAlign="center"; 
+        hex.top.ctx.textBaseline = "middle";
+        hex.top.ctx.font = 'bold '+ (25/2.25) +'pt Arial';
+        //Code for contrasting text with background color
+        var clr = hex.getContrastYIQ(hexObj.fillColor); //contrast against land color (fillColor)
+        hex.top.ctx.fillStyle = clr;
+        hex.top.ctx.fillText("3", hexObj.x + (hex.properties.width / 2) , hexObj.y + (hex.properties.height / 2));
+    }
+}
+
+hex.drawHexBorders = function(context, hexObj) {
     if (hexObj.highlight == true) {
         context.strokeStyle = "#00F2FF";
         context.lineWidth = 4;
@@ -65,43 +104,12 @@ hex.drawHex = function(context, hexObj) {
     Xcenter = hexObj.x + (hex.properties.width / 2),
     Ycenter = hexObj.y + (hex.properties.height / 2);
     context.beginPath();
-    context.moveTo (Xcenter +  size * Math.cos(0), Ycenter +  size *  Math.sin(0));          
-    for (var i = 1; i <= numberOfSides;i += 1) {
-        context.lineTo (Xcenter + size * Math.cos(i * 2 * Math.PI / numberOfSides), Ycenter + size * Math.sin(i * 2 * Math.PI / numberOfSides));
-    }
-    context.fillStyle = hexObj.fillColor;
-    context.fill();
-    context.closePath();
-    context.stroke();
-
-    //Draw a 2nd smaller inner hex for denoting ownership
-    context.strokeStyle = hexObj.ownc;
-    context.lineWidth = 4;
-    size = hex.properties.radius * .8,
-    Xcenter = hexObj.x + (hex.properties.width / 2),
-    Ycenter = hexObj.y + (hex.properties.height / 2);
-    context.beginPath();
-    context.moveTo (Xcenter +  size * Math.cos(0), Ycenter +  size *  Math.sin(0));          
+    context.moveTo (Xcenter +  size * Math.cos(0), Ycenter +  size *  Math.sin(0)); 
     for (var i = 1; i <= numberOfSides;i += 1) {
         context.lineTo (Xcenter + size * Math.cos(i * 2 * Math.PI / numberOfSides), Ycenter + size * Math.sin(i * 2 * Math.PI / numberOfSides));
     }
     context.closePath();
-    context.stroke();
-
-    if (hexObj.txt) {
-        //Print number of units
-        context.textAlign="center"; 
-        context.textBaseline = "middle";
-        context.font = 'bold '+ (25/2.25) +'pt Arial';
-        //Code for contrasting text with background color
-        var clr = hex.getContrastYIQ(hexObj.fillColor); //contrast against land color (fillColor)
-        context.fillStyle = clr;
-        context.fillText("3", hexObj.x + (hex.properties.width / 2) , hexObj.y + (hex.properties.height / 2));
-    }
-}
-
-hex.drawHexBorders = function() {
-
+    context.stroke();   
 }
 hex.draw = function() {
     hex.base.canvas.width = hex.base.canvas.width; //clear canvas
@@ -225,4 +233,35 @@ hex.clickEvent = function(e) {
     } else {
         console.log("Click out of range");
     }
+}
+hex.tintImage = function(context, img_path, hexObj){
+    // create offscreen buffer, 
+    buffer = document.createElement('canvas');
+    if (typeof window.G_vmlCanvasManager!="undefined") { 
+        G_vmlCanvasManager.initElement(buffer);
+        var bx = buffer.getContext('2d');
+    }else{
+        var bx = buffer.getContext('2d');
+    };
+
+    fg = new Image();
+    fg.src = img_path;
+    buffer.width = this.width;
+    buffer.height = this.height;
+
+    // fill offscreen buffer with the tint color
+    bx.fillStyle = hexObj.ownc;
+    bx.fillRect(0,0,this.width,this.height);
+
+    // destination atop makes a result with an alpha channel identical to fg, but with all pixels retaining their original color *as far as I can tell*
+    bx.globalCompositeOperation = "destination-atop";
+    bx.drawImage(fg,0,0);
+
+    // to tint the image, draw it first
+    x.drawImage(fg,0,0);
+
+    //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
+    x.globalAlpha = 0.5;
+    x.drawImage(buffer,0,0);
+    
 }
