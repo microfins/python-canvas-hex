@@ -1,14 +1,14 @@
 hex.clearMap = function(){
-    this.hexes = [];
+    hex.hexes = [];
 }
 hex.rowcolToXY = function(row, col){
     var offsetColumn = (col % 2 == 0) ? false : true;
     if (!offsetColumn) {
-        x = (col * hex.side) + hex.base.canvasOriginX;
-        y = (row * hex.height) + hex.base.canvasOriginY;
+        x = (col * hex.properties.side) + hex.base.canvasOriginX;
+        y = (row * hex.properties.height) + hex.base.canvasOriginY;
     } else {
-        x = col * hex.side + hex.base.canvasOriginX;
-        y = (row * hex.height) + hex.base.canvasOriginY + (hex.height * 0.5);
+        x = col * hex.properties.side + hex.base.canvasOriginX;
+        y = (row * hex.properties.height) + hex.base.canvasOriginY + (hex.properties.height * 0.5);
     }
 
     return {"x": x, "y": y}
@@ -61,9 +61,9 @@ hex.drawHex = function(context, hexObj) {
         context.lineWidth = 2;
     }
     var numberOfSides = 6,
-    size = hex.radius,
-    Xcenter = hexObj.x + (hex.width / 2),
-    Ycenter = hexObj.y + (hex.height / 2);
+    size = hex.properties.radius,
+    Xcenter = hexObj.x + (hex.properties.width / 2),
+    Ycenter = hexObj.y + (hex.properties.height / 2);
     context.beginPath();
     context.moveTo (Xcenter +  size * Math.cos(0), Ycenter +  size *  Math.sin(0));          
     for (var i = 1; i <= numberOfSides;i += 1) {
@@ -77,9 +77,9 @@ hex.drawHex = function(context, hexObj) {
     //Draw a 2nd smaller inner hex for denoting ownership
     context.strokeStyle = hexObj.ownc;
     context.lineWidth = 4;
-    size = hex.radius * .8,
-    Xcenter = hexObj.x + (hex.width / 2),
-    Ycenter = hexObj.y + (hex.height / 2);
+    size = hex.properties.radius * .8,
+    Xcenter = hexObj.x + (hex.properties.width / 2),
+    Ycenter = hexObj.y + (hex.properties.height / 2);
     context.beginPath();
     context.moveTo (Xcenter +  size * Math.cos(0), Ycenter +  size *  Math.sin(0));          
     for (var i = 1; i <= numberOfSides;i += 1) {
@@ -87,7 +87,6 @@ hex.drawHex = function(context, hexObj) {
     }
     context.closePath();
     context.stroke();
-
 
     if (hexObj.txt) {
         //Print number of units
@@ -97,7 +96,7 @@ hex.drawHex = function(context, hexObj) {
         //Code for contrasting text with background color
         var clr = hex.getContrastYIQ(hexObj.fillColor); //contrast against land color (fillColor)
         context.fillStyle = clr;
-        context.fillText("3", hexObj.x + (hex.width / 2) , hexObj.y + (hex.height / 2));
+        context.fillText("3", hexObj.x + (hex.properties.width / 2) , hexObj.y + (hex.properties.height / 2));
     }
 }
 
@@ -107,13 +106,13 @@ hex.drawHexBorders = function() {
 hex.draw = function() {
     hex.base.canvas.width = hex.base.canvas.width; //clear canvas
     hex.top.canvas.width = hex.top.canvas.width; //clear canvas
-    hex.drawHexGrid(hex.rows, hex.cols);
+    hex.drawHexGrid(hex.properties.rows, hex.properties.cols);
 }
 
 hex.getRelativeCanvasOffset = function() {
     var x = 0,
         y = 0;
-    var layoutElement = this.base.canvas;
+    var layoutElement = hex.base.canvas;
     if (layoutElement.offsetParent) {
         do {
             x += layoutElement.offsetLeft;
@@ -131,30 +130,30 @@ hex.getSelectedTile = function(mouseX, mouseY) {
     mouseX -= offSet.left;
     mouseY -= offSet.top;
 
-    var column = Math.floor((mouseX) / this.side);
-    var row = Math.floor(column % 2 == 0 ? Math.floor((mouseY) / this.height) : Math.floor(((mouseY + (this.height * 0.5)) / this.height)) - 1);
+    var column = Math.floor((mouseX) / hex.properties.side);
+    var row = Math.floor(column % 2 == 0 ? Math.floor((mouseY) / hex.properties.height) : Math.floor(((mouseY + (hex.properties.height * 0.5)) / hex.properties.height)) - 1);
 
     //Test if on left side of frame            
-    if (mouseX > (column * this.side) && mouseX < (column * this.side) + this.width - this.side) {
+    if (mouseX > (column * hex.properties.side) && mouseX < (column * hex.properties.side) + hex.properties.width - hex.properties.side) {
         //Now test which of the two triangles we are in 
         //Top left triangle points
         var p1 = new Object();
-        p1.x = column * this.side;
-        p1.y = column % 2 == 0 ? row * this.height : (row * this.height) + (this.height / 2);
+        p1.x = column * hex.properties.side;
+        p1.y = column % 2 == 0 ? row * hex.properties.height : (row * hex.properties.height) + (hex.properties.height / 2);
 
         var p2 = new Object();
         p2.x = p1.x;
-        p2.y = p1.y + (this.height / 2);
+        p2.y = p1.y + (hex.properties.height / 2);
 
         var p3 = new Object();
-        p3.x = p1.x + this.width - this.side;
+        p3.x = p1.x + hex.properties.width - hex.properties.side;
         p3.y = p1.y;
 
         var mousePoint = new Object();
         mousePoint.x = mouseX;
         mousePoint.y = mouseY;
 
-        if (this.isPointInTriangle(mousePoint, p1, p2, p3)) {
+        if (hex.isPointInTriangle(mousePoint, p1, p2, p3)) {
             column--;
             if (column % 2 != 0) {
                 row--;
@@ -167,13 +166,13 @@ hex.getSelectedTile = function(mouseX, mouseY) {
 
         var p5 = new Object();
         p5.x = p4.x;
-        p5.y = p4.y + (this.height / 2);
+        p5.y = p4.y + (hex.properties.height / 2);
 
         var p6 = new Object();
-        p6.x = p5.x + (this.width - this.side);
+        p6.x = p5.x + (hex.properties.width - hex.properties.side);
         p6.y = p5.y;
 
-        if (this.isPointInTriangle(mousePoint, p4, p5, p6)) {
+        if (hex.isPointInTriangle(mousePoint, p4, p5, p6)) {
             column--;
 
             if (column % 2 == 0) {
@@ -188,9 +187,9 @@ hex.getSelectedTile = function(mouseX, mouseY) {
 }
 hex.isPointInTriangle = function(pt, v1, v2, v3) {
     var b1, b2, b3;
-    b1 = this.sign(pt, v1, v2) < 0.0;
-    b2 = this.sign(pt, v2, v3) < 0.0;
-    b3 = this.sign(pt, v3, v1) < 0.0;
+    b1 = hex.sign(pt, v1, v2) < 0.0;
+    b2 = hex.sign(pt, v2, v3) < 0.0;
+    b3 = hex.sign(pt, v3, v1) < 0.0;
     return ((b1 == b2) && (b2 == b3));
 }
 hex.sign = function(p1, p2, p3) {
@@ -201,13 +200,28 @@ hex.clickEvent = function(e) {
     var mouseY = e.pageY - window.pageYOffset;
     var localX = mouseX - hex.base.canvasOriginX;
     var localY = mouseY - hex.base.canvasOriginY;
-    var tile = this.getSelectedTile(localX, localY);
+    var tile = hex.getSelectedTile(localX, localY);
     if (GLOBALS.DEBUG == true) {
-        console.log(this.hexes[tile.row][tile.col]);
+        console.log(hex.hexes[tile.row][tile.col]);
     }
-    if (tile.row < this.rows && tile.row >= 0 && tile.col < this.cols && tile.col >= 0) {
-        this.hexes[tile.col][tile.row].h = this.hexes[tile.col][tile.row].h ? false : true;
-        this.draw();
+    if (tile.row < hex.properties.rows && tile.row >= 0 && tile.col < hex.properties.cols && tile.col >= 0) {
+        hex.hexes[tile.col][tile.row].h = hex.hexes[tile.col][tile.row].h ? false : true;
+        hex.draw();
+        //send click to server
+        $.ajax({
+            type: 'POST',
+            url: '/update_properties',
+            data: JSON.stringify(hex.properties),
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function(response) {
+                console.log(response);
+                hex.properties = response;
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
     } else {
         console.log("Click out of range");
     }

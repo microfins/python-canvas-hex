@@ -2,11 +2,10 @@ import redis
 import math
 from flask import json, jsonify
 
-
 r = redis.Redis("localhost")
 
 def save_tile(map_id, map_tile):
-    r.hmset(map_id, get_redis_rowcol_name(map_tile['row'], map_tile['col']), json.dumps(map_tile))
+    r.hset(map_id, get_redis_rowcol_name(map_tile['row'], map_tile['col']), json.dumps(map_tile))
     resp = jsonify({"message": "saved"})
     resp.status_code = 201
     return resp
@@ -17,6 +16,15 @@ def save_map(map_array, map_id):
         for row in range(0, len(map_array[col])):
             pipe.hset(map_id, get_redis_rowcol_name(map_array[col][row]['row'], map_array[col][row]['col']), json.dumps(map_array[col][row]))
     pipe.execute()
+    resp = jsonify({"message": "saved"})
+    resp.status_code = 201
+    return resp
+
+def save_properties(properties, map_id):
+    print properties, map_id
+    r.hset(map_id, "properties", json.dumps(properties))
+    get = r.hget(map_id, "properties")
+    print get
     resp = jsonify({"message": "saved"})
     resp.status_code = 201
     return resp

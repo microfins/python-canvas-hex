@@ -5,13 +5,15 @@ var GLOBALS = {
 };
 
 
-var hex = {};
+var hex = {
+    "properties": {}
+};
 hex.init = function(props, map, reload) {
     console.log("Initializing new game...");
     //Set all passed properties to hex object
     for (var k in props){
         if (props.hasOwnProperty(k)) {
-             hex[k] = props[k];
+             hex.properties[k] = props[k];
         }
     }
     hex.canvas_layers = [
@@ -29,7 +31,6 @@ hex.init = function(props, map, reload) {
         hex[hex.canvas_layers[i]].canvas.height = hex[hex.canvas_layers[i]].canvas.offsetHeight;
         hex[hex.canvas_layers[i]].ctx = hex[hex.canvas_layers[i]].canvas.getContext('2d');
     }
-    this.gameProps = {};
     this.log = [];
     /*
     if (reload == false){
@@ -54,7 +55,7 @@ hex.init = function(props, map, reload) {
     */
 
     //Draw base grid, then draw overlaid items on top
-    this.drawHexGrid(this.rows, this.cols);
+    hex.drawHexGrid(hex.properties.rows, hex.properties.cols);
 }
 
 hex.saveData = function(param, map) {

@@ -16,14 +16,14 @@ def get_game_props(radius):
             'player': 0,
             'phase': 'unit_placement'
         },
-        'clickState': None,
+        'click_state': None,
         'neighbors': [],
-        'loggedIn': {
+        'logged_in': {
             'username': 'bo_knows',
             'email': 'lawrence.boland@gmail.com',
         },
-        'unitCnt': 0,
-        'unitsToBePlaced': 0,
+        'unit_count': 0,
+        'units_to_be_placed': 0,
         'fortifies': {
             'used': 0,
             'remaining': 0
