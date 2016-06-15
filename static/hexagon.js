@@ -16,6 +16,33 @@ hex.rowcolToXY = function(row, col){
 hex.drawHexGrid = function(rows, cols) {
     hex.base.canvasOriginX = hex.base.canvas.getBoundingClientRect().left;
     hex.base.canvasOriginY = hex.base.canvas.getBoundingClientRect().top;
+    var images = [], urls = ["//i.imgur.com/DAg71N5.jpg?1", "//i.imgur.com/ZO3XQpj.jpg?1"], count = urls.length, ctx = hex.base.canvas.getContext("2d");
+
+    function handler() {if (!--count) start()}
+
+    function Tile(ctx, x, y, radius, img) {
+        this.pattern = ctx.createPattern(img, "repeat");
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+    }
+    Tile.prototype.render = function(ctx) {
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for(var i = 0; i < Math.PI*2; i += Math.PI/3)
+        ctx.lineTo(this.x + Math.cos(i) * this.radius, this.y + Math.sin(i) * this.radius);
+        ctx.fillStyle = this.pattern;
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+    }
+    urls.forEach(function(url) {
+      var img = new Image;
+      images.push(img);
+      img.onload = handler;
+      img.src = url;
+    });
 
     //base grid
     for (var i = 0; i < cols; i++) {
@@ -28,27 +55,19 @@ hex.drawHexGrid = function(rows, cols) {
                     "ownc": hex.hexes[i][j].ownc,
                     "highlight": hex.hexes[i][j].h,
                 }
-                hex.drawHex(hex.base.ctx, hexObj); 
+                if (hex.hexes[i][j].t == "water"){
+                    image_num = 0;
+                }else{
+                    image_num = 1;
+                }
+                hex.tiles.push(new Tile(hex.base.ctx, hex.rowcolToXY(j, i).x, hex.rowcolToXY(j, i).y, hex.properties.radius, images[image_num])); 
         }
     }
 
-    //highlight
-    for (var i = 0; i < cols; i++) {
-        for (var j = 0; j < rows; j++) {
-            if (hex.hexes[i][j].h == true){
-                hexObj = {
-                    "x": hex.rowcolToXY(j, i).x,
-                    "y": hex.rowcolToXY(j, i).y,
-                    "fillColor": hex.hexes[i][j].tc,
-                    "txt": hex.hexes[i][j].txt,
-                    "ownc": hex.hexes[i][j].ownc,
-                    "highlight": hex.hexes[i][j].h,
-                }
-                hex.drawHex(hex.top.ctx, hexObj);   
-            }
-            
-        }
+    function start(){
+        hex.tiles.forEach(function(tile) { tile.render(hex.base.ctx) });
     }
+    
 
 }
 
@@ -67,7 +86,13 @@ hex.drawHex = function(context, hexObj) {
     Ycenter = hexObj.y + (hex.properties.height / 2);
 
     var img = new Image();
-    img.src = "/static/grass.jpg";
+    if (hexObj.t == "grassland"){
+        img.src = "/static/grass.jpg";
+    }else{
+        img.src = "/static/mountain.jpg";
+    }
+
+
     var pattern = context.createPattern(img, "repeat");
     context.fillStyle = pattern;
     context.beginPath();

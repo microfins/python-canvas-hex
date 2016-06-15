@@ -6,7 +6,8 @@ var GLOBALS = {
 
 
 var hex = {
-    "properties": {}
+    "properties": {},
+    "tiles": []
 };
 hex.init = function(props, map, reload) {
     console.log("Initializing new game...");
