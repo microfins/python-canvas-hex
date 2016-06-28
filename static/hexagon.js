@@ -13,35 +13,19 @@ hex.rowcolToXY = function(row, col){
 
     return {"x": x, "y": y}
 }
+
+
+
 hex.drawHexGrid = function(rows, cols) {
     hex.base.canvasOriginX = hex.base.canvas.getBoundingClientRect().left;
     hex.base.canvasOriginY = hex.base.canvas.getBoundingClientRect().top;
-    var images = [], urls = ["//i.imgur.com/DAg71N5.jpg?1", "//i.imgur.com/ZO3XQpj.jpg?1"], count = urls.length, ctx = hex.base.canvas.getContext("2d");
+    //function handler() {if (!--count) start()}
 
-    function handler() {if (!--count) start()}
-
-    function Tile(ctx, x, y, radius, img) {
-        this.pattern = ctx.createPattern(img, "repeat");
-        this.x = x;
-        this.y = y;
-        this.radius = radius;
-    }
-    Tile.prototype.render = function(ctx) {
-        ctx.strokeStyle = "#000";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        for(var i = 0; i < Math.PI*2; i += Math.PI/3)
-        ctx.lineTo(this.x + Math.cos(i) * this.radius, this.y + Math.sin(i) * this.radius);
-        ctx.fillStyle = this.pattern;
-        ctx.fill();
-        ctx.stroke();
-        ctx.closePath();
-    }
-    urls.forEach(function(url) {
+    //Load images into memory for use
+    hex.properties.terrain_images.forEach(function(url) {
       var img = new Image;
-      images.push(img);
-      img.onload = handler;
-      img.src = url;
+      //img.onload = handler;
+      img.src = url.url;
     });
 
     //base grid
@@ -60,7 +44,7 @@ hex.drawHexGrid = function(rows, cols) {
                 }else{
                     image_num = 1;
                 }
-                hex.tiles.push(new Tile(hex.base.ctx, hex.rowcolToXY(j, i).x, hex.rowcolToXY(j, i).y, hex.properties.radius, images[image_num])); 
+                hex.tiles.push(new Tile(hex.base.ctx, j, i, hex.properties.radius, hex.terrain_images[hex.hexes[i][j].t])); 
         }
     }
 

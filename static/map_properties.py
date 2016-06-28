@@ -41,7 +41,11 @@ def get_game_props(radius):
         'cards': {
             'held': {},
             'remaining': {}
-        }
+        },
+        'terrain_images': [
+            {"name": "grassland", "url": "/static/grassland.jpg"},
+            {"name": "mountains", "url": "/static/mountains.jpg"},
+        ]
     }
     return gameProps
 
